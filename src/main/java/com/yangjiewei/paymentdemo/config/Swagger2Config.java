@@ -15,6 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Config {
 
     /**
+     * 添加docket对象即可访问页面
      * http://localhost:8090/swagger-ui.html
      */
     @Bean
