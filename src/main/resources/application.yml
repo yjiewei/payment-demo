@@ -12,4 +12,9 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8 # 东八区
+  datasource:
+    password: 145792
+    username: root
+    url: jdbc:mysql://120.78.10.87:3306/payment_demo/?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
