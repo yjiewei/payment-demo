@@ -3,6 +3,9 @@ package com.yangjiewei.paymentdemo.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+/**
+ * 指定表名是因为不能对应，字段的下划线是可以对应的
+ */
 @Data
 @TableName("t_order_info")
 public class OrderInfo  extends BaseEntity{

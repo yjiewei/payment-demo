@@ -1,9 +1,7 @@
 ## 应用名称
 #spring.application.name=payment-demo
-
 server:
   port: 8090
-
 
 spring:
   application:
