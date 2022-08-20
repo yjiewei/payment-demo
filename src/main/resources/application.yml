@@ -8,3 +8,8 @@ server:
 spring:
   application:
     name: payment-demo
+  # 调整返回的时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8 # 东八区
+

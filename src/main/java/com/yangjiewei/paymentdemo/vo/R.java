@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@Accessors(chain = true) // TODO 这个是干嘛用的
+@Accessors(chain = true) // TODO 这个是干嘛用的 链式调用吗？
 public class R {
 
     /**
