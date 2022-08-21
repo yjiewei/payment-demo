@@ -9,6 +9,7 @@ import com.yangjiewei.paymentdemo.service.ProductService;
 import com.yangjiewei.paymentdemo.vo.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Api(tags = "商品管理")
 @RestController
+@CrossOrigin
 @RequestMapping("/api/product")
 public class ProductController {
 
@@ -39,9 +41,9 @@ public class ProductController {
      * 获取商品列表
      */
     @ApiOperation("获取商品列表接口")
-    @GetMapping("/getProductList")
+    @GetMapping("/list")
     public R getProductList() {
         List<Product> productList = productService.list();
-        return R.ok().data("商品列表", productList);
+        return R.ok().data("productList", productList);
     }
 }
