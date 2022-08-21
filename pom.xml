@@ -64,6 +64,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- 生成自定义配置的元数据信息，这样配置文件才能直接点击跳转 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
