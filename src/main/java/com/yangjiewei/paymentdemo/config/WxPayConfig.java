@@ -9,6 +9,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.security.PrivateKey;
+
 @Data // 使用set方法将wxpay节点中的值填充到当前类属性中
 @Configuration
 @PropertySource("classpath:wxpay.properties") // 读取配置文件
@@ -28,5 +30,10 @@ public class WxPayConfig {
     private String domain;
 
     private String notifyDomain;
+
+    private PrivateKey getPrivateKey(String filename) {
+        // todo
+        return null;
+    }
 
 }

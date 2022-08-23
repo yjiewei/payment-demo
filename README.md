@@ -1,5 +1,8 @@
 # 工程简介
 ## 微信支付
+> https://wechatpay-api.gitbook.io/wechatpay-api-v3/
+>
+> https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient
 ### APIv3
 1. 引入支付参数
 2. 加载商户私钥 商户用私钥签名，微信用商户公钥去验签
