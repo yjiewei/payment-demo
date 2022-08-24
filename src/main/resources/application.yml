@@ -21,3 +21,7 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:com/yangjiewei/paymentdemo/mapper/xml/*.xml
 
+# 开启debug日志
+logging:
+  level:
+    root: info

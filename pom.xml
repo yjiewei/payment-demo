@@ -79,6 +79,12 @@
             <version>0.3.0</version>
         </dependency>
 
+        <!--json处理器-->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
