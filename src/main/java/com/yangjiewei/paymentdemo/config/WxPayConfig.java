@@ -106,7 +106,7 @@ public class WxPayConfig {
  * 微信SDK提供的获取httpClient方式会帮我们封装签名验签的方法等
  * https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_0.shtml
  * authorization token=[mchid="1558950191",nonce_str="ith8McWBWB2uffaa3cBPgho7CcCNKoyo",timestamp="1661395845",serial_no="34345964330B66427E0D3D28826C4993C77E631F",signature="tAOO8YN5oOX39NjsQhs0F+TPoTLvl30dgzh/bJ9AVkWUquGOw8+SB+xFtriZtGv1BeyJZzihjwhkaKQsVtuxhxFgCNFLApnhtbECDg4w3KzZCFtqsc3XCWgUHFAnEpiNtfM1mJ9aCEWQjKtdyEGYFdfiJFfQ2vaqCQxBFvQ0azntoizf1yaHOposuE7NWRCsXdwl1lmyvf/wE4PJywF5KgLnkp9XJkW/A5Z6PJxAzmXYe4j+pgk85CDHgxs0mwHR8Lz4FnEpMpuUqs5GmwRjCo9+DS6RVqyYWNbpB/yaYqA1daYVYezCxZTdYbLahRJfzCAC41HcOzPuYMvORn6sUA=="]
- * 生成签名：
+ * 生成签名：com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Credentials#getToken(org.apache.http.client.methods.HttpRequestWrapper)
  *   1.构造签名串
  *     POST
  *     /v3/pay/transactions/native
