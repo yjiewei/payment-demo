@@ -120,6 +120,13 @@ public class WxPayConfig {
  *   3.设置HTTP头
  *     Authorization: WECHATPAY2-SHA256-RSA2048 mchid="1558950191",nonce_str="ith8McWBWB2uffaa3cBPgho7CcCNKoyo",timestamp="1661395845",serial_no="34345964330B66427E0D3D28826C4993C77E631F",signature="tAOO8YN5oOX39NjsQhs0F+TPoTLvl30dgzh/bJ9AVkWUquGOw8+SB+xFtriZtGv1BeyJZzihjwhkaKQsVtuxhxFgCNFLApnhtbECDg4w3KzZCFtqsc3XCWgUHFAnEpiNtfM1mJ9aCEWQjKtdyEGYFdfiJFfQ2vaqCQxBFvQ0azntoizf1yaHOposuE7NWRCsXdwl1lmyvf/wE4PJywF5KgLnkp9XJkW/A5Z6PJxAzmXYe4j+pgk85CDHgxs0mwHR8Lz4FnEpMpuUqs5GmwRjCo9+DS6RVqyYWNbpB/yaYqA1daYVYezCxZTdYbLahRJfzCAC41HcOzPuYMvORn6sUA=="
  *
- * 签名验证：1.获取平台证书 2.检查平台证书序列号 3.构造验签名串 4.获取应答签名 5.验证签名
+ *
+ * 签名验证：com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator#validate(org.apache.http.client.methods.CloseableHttpResponse)
+ * https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_1.shtml
+ *   1.获取平台证书
+ *   2.检查平台证书序列号
+ *   3.构造验签名串
+ *   4.获取应答签名
+ *   5.验证签名
  *
  */
