@@ -1,8 +1,10 @@
 package com.yangjiewei.paymentdemo.controller;
 
 import com.google.gson.Gson;
+import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import com.yangjiewei.paymentdemo.service.WxPayService;
 import com.yangjiewei.paymentdemo.util.HttpUtils;
+import com.yangjiewei.paymentdemo.util.WechatPay2ValidatorForRequest;
 import com.yangjiewei.paymentdemo.vo.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +33,9 @@ public class WxPayController {
 
     @Resource
     private WxPayService wxPayService;
+
+    @Resource
+    private Verifier verifier;
 
     /**
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_1.shtml
@@ -76,7 +81,17 @@ public class WxPayController {
             log.info("支付通知的id ===> {}", bodyMap.get("id"));
             log.info("支付通知的完整数据 ===> {}", body);
 
-            // todo 签名验证
+            // 签名验证
+            WechatPay2ValidatorForRequest validator
+                    = new WechatPay2ValidatorForRequest(verifier, body, (String) bodyMap.get("id"));
+            if (!validator.validate(request)) {
+                log.error("通知验签失败");
+                response.setStatus(500);
+                map.put("code", "ERROR");
+                map.put("message", "通知验签失败");
+                return gson.toJson(map);
+            }
+            log.info("通知验签成功");
             // todo 处理订单
 
             /**
