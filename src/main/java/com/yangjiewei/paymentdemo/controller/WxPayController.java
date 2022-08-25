@@ -66,6 +66,10 @@ public class WxPayController {
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_5.shtml
      * 这个接口对请求信息要做签名验证，避免假通知
      * 需要对该请求进行应答，成功或失败
+     * {
+     *    "code": "FAIL",
+     *    "message": "失败"
+     * }
      */
     @ApiOperation("支付通知")
     @PostMapping("/native/notify")
@@ -75,13 +79,13 @@ public class WxPayController {
         Map<String, String> map = new HashMap<>();
 
         try{
-            // 处理通知参数
+            // 1.处理通知参数
             String body = HttpUtils.readData(request);
             Map<String, Object> bodyMap = gson.fromJson(body, HashMap.class);
-            log.info("支付通知的id ===> {}", bodyMap.get("id"));
-            log.info("支付通知的完整数据 ===> {}", body);
+            log.info("支付通知的id:{}", bodyMap.get("id"));
+            log.info("支付通知的完整数据:{}", body);
 
-            // 签名验证
+            // 2.签名验证
             WechatPay2ValidatorForRequest validator
                     = new WechatPay2ValidatorForRequest(verifier, body, (String) bodyMap.get("id"));
             if (!validator.validate(request)) {
@@ -92,16 +96,10 @@ public class WxPayController {
                 return gson.toJson(map);
             }
             log.info("通知验签成功");
-            // todo 处理订单
 
-            /**
-             * 处理应答
-             * 成功应答：成功应答必须为200或204，否则就是失败应答
-             * {
-             *    "code": "FAIL",
-             *    "message": "失败"
-             * }
-             */
+            // 3.处理订单 微信返回的通知数据是加密的
+            wxPayService.processOrder(bodyMap);
+
             // 测试超时应答：添加睡眠时间使应答超时
             // TimeUnit.SECONDS.sleep(5);
             response.setStatus(200);
