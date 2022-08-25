@@ -24,4 +24,4 @@ mybatis-plus:
 # 开启debug日志
 logging:
   level:
-    root: info
+    root: debug

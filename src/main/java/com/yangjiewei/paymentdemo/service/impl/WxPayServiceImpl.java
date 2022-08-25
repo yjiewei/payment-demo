@@ -11,7 +11,6 @@ import com.yangjiewei.paymentdemo.util.OrderNoUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -45,6 +44,28 @@ public class WxPayServiceImpl implements WxPayService {
     /**
      * 开发指引：https://pay.weixin.qq.com/wiki/doc/apiv3/open/pay/chapter2_7_2.shtml
      * 接口文档：https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_1.shtml
+     * requestJson
+     * {
+     *   "amount":{
+     *       "total":1,
+     *       "currency":"CNY"
+     *   },
+     *   "mchid":"1558950191",
+     *   "out_trade_no":"ORDER_20220825104830065",
+     *   "appid":"wx74862e0dfcf69954",
+     *   "description":"test",
+     *   "notify_url":"https://500c-219-143-130-12.ngrok.io/api/wx-pay/native/notify"
+     * }
+     *
+     * response
+     * {
+     *   "code": 0,
+     *   "message": "成功",
+     *   "data": {
+     *     "codeUrl": "weixin://wxpay/bizpayurl?pr=tyq42wrzz",
+     *     "orderNo": "ORDER_20220825104830065"
+     *   }
+     * }
      */
     @Override
     public Map<String, Object> nativePay(Long productId) throws Exception {
@@ -92,7 +113,7 @@ public class WxPayServiceImpl implements WxPayService {
         httpPost.setEntity(entity);
         httpPost.setHeader("Accept", "application/json");
 
-        // 完成签名并执行请求
+        // 完成签名并执行请求 wxPayClient会自动的处理签名和验签，并进行证书自动更新
         CloseableHttpResponse nativePayResponse = wxPayClient.execute(httpPost);
         log.info("4.解析微信native下单响应");
         try{

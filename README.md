@@ -16,6 +16,8 @@
 
 微信AES解密报错 Illegal key size，这里我该用java11版本解决。
 
+简单来说，微信用256位加密，但是我们jdk8默认是128位，所以报错了。
+
 具体说明看：https://www.cnblogs.com/operationhome/p/11886340.html
 
 ## 支付宝支付
