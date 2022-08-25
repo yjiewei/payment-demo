@@ -6,6 +6,7 @@ import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxApiType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxNotifyType;
+import com.yangjiewei.paymentdemo.service.OrderInfoService;
 import com.yangjiewei.paymentdemo.service.WxPayService;
 import com.yangjiewei.paymentdemo.util.OrderNoUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +16,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author yangjiewei
@@ -34,6 +37,9 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Resource
     private WxPayConfig wxPayConfig;
+
+    @Resource
+    private OrderInfoService orderInfoService;
 
     /**
      * 获取微信支付的httpClient，可以签名验签
@@ -70,14 +76,19 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public Map<String, Object> nativePay(Long productId) throws Exception {
         log.info("1.生成订单");
-        // TODO 这里需要把订单信息存入到数据库
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setTitle("test");
-        orderInfo.setOrderNo(OrderNoUtils.getOrderNo());
-        orderInfo.setProductId(productId);
-        // 单位是分
-        orderInfo.setTotalFee(1);
-        orderInfo.setOrderStatus(OrderStatus.NOTPAY.getType());
+
+        String codeUrl;
+        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId);
+        if (Objects.nonNull(orderInfo ) && !StringUtils.isEmpty(orderInfo.getCodeUrl())) {
+            log.info("订单已存在，二维码已保存");
+            log.info("订单号:{}，二维码:{}", orderInfo.getOrderNo(), orderInfo.getCodeUrl());
+            codeUrl = orderInfo.getCodeUrl();
+            // 返回二维码
+            Map<String, Object> map = new HashMap<>();
+            map.put("codeUrl", codeUrl);
+            map.put("orderNo", orderInfo.getOrderNo());
+            return map;
+        }
 
         log.info("2.调用统一下单api");
 
@@ -132,13 +143,15 @@ public class WxPayServiceImpl implements WxPayService {
             }
             // 响应结果 json字符串转对象
             Map<String, String> resultMap = gson.fromJson(response, HashMap.class);
-            // 二维码
-            String codeUrl = resultMap.get("code_url");
+            // 获取二维码并保存
+            codeUrl = resultMap.get("code_url");
+            String orderNo = orderInfo.getOrderNo();
+            orderInfoService.saveCodeUrl(orderNo, codeUrl);
 
             Map<String, Object> map = new HashMap<>();
             map.put("codeUrl", codeUrl);
-            map.put("orderNo", orderInfo.getOrderNo());
-            log.info("5.响应二维码：{}，订单号：{}", codeUrl, orderInfo.getOrderNo());
+            map.put("orderNo", orderNo);
+            log.info("5.响应二维码：{}，订单号：{}", codeUrl, orderNo);
             return map;
         }finally {
             // fixme 为什么要关闭这个？连接资源有限？
