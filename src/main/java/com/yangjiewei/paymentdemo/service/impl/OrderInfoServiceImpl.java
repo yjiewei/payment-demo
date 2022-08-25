@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -60,6 +61,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         OrderInfo orderInfo = baseMapper.selectOne(queryWrapper);
         orderInfo.setCodeUrl(codeUrl);
         baseMapper.updateById(orderInfo);
+    }
+
+    /**
+     * 查询订单列表并按照创建时间降序返回
+     * 按理来说应该根据用户信息去获取的，这里简化了
+     */
+    @Override
+    public List<OrderInfo> listOrderByCreateTimeDesc() {
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("create_time");
+        return baseMapper.selectList(queryWrapper);
     }
 
     /**
