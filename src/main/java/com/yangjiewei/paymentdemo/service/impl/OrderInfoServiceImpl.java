@@ -51,6 +51,18 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 下单成功之后才能去缓存二维码，保存订单的时候还没有二维码
+     */
+    @Override
+    public void saveCodeUrl(String orderNo, String codeUrl) {
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_no", orderNo);
+        OrderInfo orderInfo = baseMapper.selectOne(queryWrapper);
+        orderInfo.setCodeUrl(codeUrl);
+        baseMapper.updateById(orderInfo);
+    }
+
+    /**
      * 查找已存在但未支付的订单,防止重复创建订单对象
      */
     private OrderInfo getNoPayOrderByProductId(Long productId) {
