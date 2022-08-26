@@ -39,6 +39,8 @@
    由于GitHub访问速度慢，代码提交到Gitee，但是我想同步提交到GitHub，可以参考这两篇文章进行配置。
 
    配置拉取的项目下的隐藏文件夹.git里的config文件，我这里的配置是这样的
+
+   当你配置了两个url就会把之前另外一个分支不存在的提交同步过去。
    ```text
    [core]
        repositoryformatversion = 0
