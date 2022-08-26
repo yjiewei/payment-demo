@@ -14,7 +14,11 @@ import java.time.Instant;
 
 import static com.wechat.pay.contrib.apache.httpclient.constant.WechatPayHttpHeaders.*;
 
-
+/**
+ * 对微信请求进行验签
+ * 参考微信SDK验签器进行修改，里面验证的是响应，我们要校验的是请求
+ * com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator
+ */
 public class WechatPay2ValidatorForRequest{
 
     protected static final Logger log = LoggerFactory.getLogger(WechatPay2ValidatorForRequest.class);
@@ -42,6 +46,12 @@ public class WechatPay2ValidatorForRequest{
         return new IllegalArgumentException("signature verify fail: " + message);
     }
 
+    /**
+     * 对请求做校验
+     * @param request
+     * @return
+     * @throws IOException
+     */
     public final boolean validate(HttpServletRequest request) throws IOException {
         try {
             validateParameters(request);
