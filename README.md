@@ -38,6 +38,24 @@
 
    由于GitHub访问速度慢，代码提交到Gitee，但是我想同步提交到GitHub，可以参考这两篇文章进行配置。
 
+   配置拉取的项目下的隐藏文件夹.git里的config文件，我这里的配置是这样的
+   ```text
+   [core]
+       repositoryformatversion = 0
+       filemode = false
+       bare = false
+       logallrefupdates = true
+       symlinks = false
+       ignorecase = true
+   [remote "origin"]
+       url = https://gitee.com/jaysony/payment-demo.git
+       url = https://github.com/yjiewei/payment-demo.git
+       fetch = +refs/heads/*:refs/remotes/origin/*
+   [branch "master"]
+       remote = origin
+       merge = refs/heads/master
+   ```
+
    https://blog.csdn.net/yuan_jlj/article/details/125599716
 
    https://blog.csdn.net/weixin_44893902/article/details/125147574
