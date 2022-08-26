@@ -168,6 +168,7 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public void processOrder(Map<String, Object> bodyMap) throws GeneralSecurityException {
         log.info("处理订单");
+
         // 1.密文解密
         String plainText = decryptFromResource(bodyMap);
 
