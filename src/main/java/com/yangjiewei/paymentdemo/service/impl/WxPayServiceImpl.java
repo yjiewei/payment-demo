@@ -171,7 +171,7 @@ public class WxPayServiceImpl implements WxPayService {
         // 1.密文解密
         String plainText = decryptFromResource(bodyMap);
 
-        // 2.转换明文
+        // 2.转换明文 https://pay.weixin.qq.com/wiki/doc/apiv3_partner/apis/chapter4_4_5.shtml
 
         // 3.更新订单状态
 
