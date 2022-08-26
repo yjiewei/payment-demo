@@ -32,4 +32,13 @@
 
 
 # 延伸阅读
+## 三、其他
+
+### 1. 代码同步问题
+
+   由于GitHub访问速度慢，代码提交到Gitee，但是我想同步提交到GitHub，可以参考这两篇文章进行配置。
+
+   https://blog.csdn.net/yuan_jlj/article/details/125599716
+
+   https://blog.csdn.net/weixin_44893902/article/details/125147574
 
