@@ -75,6 +75,25 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
+     * 更新订单支付状态
+     */
+    @Override
+    public void updateStatusByOrderNo(String orderNo, OrderStatus orderStatus) {
+        log.info("更新订单状态：{}", orderStatus.getType());
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_no", orderNo);
+
+        // 这里要两次数据库交互，可以试下直接更新
+        // OrderInfo orderInfo = baseMapper.selectOne(queryWrapper);
+        // orderInfo.setOrderStatus(orderStatus.getType());
+        // baseMapper.updateById(orderInfo);
+
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderStatus(orderStatus.getType());
+        baseMapper.update(orderInfo, queryWrapper);
+    }
+
+    /**
      * 查找已存在但未支付的订单,防止重复创建订单对象
      */
     private OrderInfo getNoPayOrderByProductId(Long productId) {

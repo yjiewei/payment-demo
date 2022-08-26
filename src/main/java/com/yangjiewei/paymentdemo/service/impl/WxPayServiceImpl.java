@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import com.yangjiewei.paymentdemo.config.WxPayConfig;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
+import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxApiType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxNotifyType;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
+import com.yangjiewei.paymentdemo.service.PaymentInfoService;
 import com.yangjiewei.paymentdemo.service.WxPayService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,6 +43,9 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Resource
     private OrderInfoService orderInfoService;
+
+    @Resource
+    private PaymentInfoService paymentInfoService;
 
     /**
      * 获取微信支付的httpClient，可以签名验签
@@ -173,10 +178,15 @@ public class WxPayServiceImpl implements WxPayService {
         String plainText = decryptFromResource(bodyMap);
 
         // 2.转换明文 https://pay.weixin.qq.com/wiki/doc/apiv3_partner/apis/chapter4_4_5.shtml
+        Gson gson = new Gson();
+        Map<String, Object> plainTextMap = gson.fromJson(plainText, HashMap.class);
+        String orderNo = (String) plainTextMap.get("out_trade_no");
 
         // 3.更新订单状态
+        orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
 
-        // 3.记录支付日志
+        // 4.记录支付日志
+        paymentInfoService.createPaymentInfo(plainText);
 
     }
 
