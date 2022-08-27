@@ -40,6 +40,8 @@
     Forwarding        https://7af6-59-42-111-64.ngrok.io -> http://localhost:8090
   
     成功访问测试地址：https://7af6-59-42-111-64.ngrok.io/api/product/test
+    
+    注意每次启动访问地址都不同，需要改动配置。
 
 ## 二、支付宝支付
 
