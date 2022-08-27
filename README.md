@@ -26,7 +26,20 @@
     微信下单成功响应时会把相关支付结果和用户信息发送回商户，商户需要接收处理并返回应答。
    
     https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_5.shtml
-
+    
+    每个人的认证信息不一致，需要自行注册账号。
+   
+    认证信息：C:\Users\yangjiewei/.ngrok2/ngrok.yml
+    
+    官网地址：https://ngrok.com/
+    
+    Web Interface     http://127.0.0.1:4040
+    
+    Forwarding        http://7af6-59-42-111-64.ngrok.io -> http://localhost:8090   
+                                 
+    Forwarding        https://7af6-59-42-111-64.ngrok.io -> http://localhost:8090
+  
+    成功访问测试地址：https://7af6-59-42-111-64.ngrok.io/api/product/test
 
 ## 二、支付宝支付
 
