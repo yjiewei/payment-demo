@@ -26,6 +26,7 @@ import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yangjiewei
@@ -182,11 +183,20 @@ public class WxPayServiceImpl implements WxPayService {
         Map<String, Object> plainTextMap = gson.fromJson(plainText, HashMap.class);
         String orderNo = (String) plainTextMap.get("out_trade_no");
 
-        // 处理重复通知 出于接口幂等性考虑
+        // 处理重复通知 出于接口幂等性考虑（无论接口被调用多少次，产生的结果都是一致的）
         String orderStatus = orderInfoService.getOrderStatus(orderNo);
         if (!OrderStatus.NOTPAY.getType().equals(orderStatus)) {
             return ;
         }
+
+        // 模拟通知并发 try catch快捷键是 ctrl+wins+alt+t
+        // 虽然前面处理了重复通知，但是这里是并发导致，这里要使用数据锁进行并发控制，以避免函数重入导致的数据混乱
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
         // 3.更新订单状态
         orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
