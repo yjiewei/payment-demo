@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author yangjiewei
@@ -53,6 +54,8 @@ public class WxPayServiceImpl implements WxPayService {
      */
     @Resource
     private CloseableHttpClient wxPayClient;
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     /**
      * 开发指引：https://pay.weixin.qq.com/wiki/doc/apiv3/open/pay/chapter2_7_2.shtml
@@ -183,26 +186,36 @@ public class WxPayServiceImpl implements WxPayService {
         Map<String, Object> plainTextMap = gson.fromJson(plainText, HashMap.class);
         String orderNo = (String) plainTextMap.get("out_trade_no");
 
-        // 处理重复通知 出于接口幂等性考虑（无论接口被调用多少次，产生的结果都是一致的）
-        String orderStatus = orderInfoService.getOrderStatus(orderNo);
-        if (!OrderStatus.NOTPAY.getType().equals(orderStatus)) {
-            return ;
+        /**
+         * 在对业务数据进行状态检查和处理之前，这里要使用数据锁进行并发控制，以避免函数重入导致的数据混乱
+         * 尝试获取锁成功之后才去处理数据，相比于同步锁，这里不会去等待，获取不到则直接返回
+         */
+        if (lock.tryLock()) {
+            try {
+                // 处理重复通知 出于接口幂等性考虑（无论接口被调用多少次，产生的结果都是一致的）
+                String orderStatus = orderInfoService.getOrderStatus(orderNo);
+                if (!OrderStatus.NOTPAY.getType().equals(orderStatus)) {
+                    return ;
+                }
+
+                // 模拟通知并发 try catch快捷键是 ctrl+wins+alt+t
+                // 虽然前面处理了重复通知，但是这里是并发导致，这里要使用数据锁进行并发控制，以避免函数重入导致的数据混乱
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                // 3.更新订单状态
+                orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
+
+                // 4.记录支付日志
+                paymentInfoService.createPaymentInfo(plainText);
+            } finally {
+                // 要主动释放锁
+                lock.unlock();
+            }
         }
-
-        // 模拟通知并发 try catch快捷键是 ctrl+wins+alt+t
-        // 虽然前面处理了重复通知，但是这里是并发导致，这里要使用数据锁进行并发控制，以避免函数重入导致的数据混乱
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        // 3.更新订单状态
-        orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
-
-        // 4.记录支付日志
-        paymentInfoService.createPaymentInfo(plainText);
 
     }
 
