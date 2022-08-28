@@ -182,6 +182,12 @@ public class WxPayServiceImpl implements WxPayService {
         Map<String, Object> plainTextMap = gson.fromJson(plainText, HashMap.class);
         String orderNo = (String) plainTextMap.get("out_trade_no");
 
+        // 处理重复通知 出于接口幂等性考虑
+        String orderStatus = orderInfoService.getOrderStatus(orderNo);
+        if (!OrderStatus.NOTPAY.getType().equals(orderStatus)) {
+            return ;
+        }
+
         // 3.更新订单状态
         orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
 

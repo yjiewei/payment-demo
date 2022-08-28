@@ -93,6 +93,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         baseMapper.update(orderInfo, queryWrapper);
     }
 
+    @Override
+    public String getOrderStatus(String orderNo) {
+        QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_no", orderNo);
+        OrderInfo orderInfo = baseMapper.selectOne(queryWrapper);
+        if (Objects.isNull(orderInfo)) {
+            return null;
+        }
+        return orderInfo.getOrderStatus();
+    }
+
     /**
      * 查找已存在但未支付的订单,防止重复创建订单对象
      */

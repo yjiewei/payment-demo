@@ -70,6 +70,10 @@ public class WxPayController {
      *    "code": "FAIL",
      *    "message": "失败"
      * }
+     *
+     * 微信发送过来的通知可能因为网络不稳定而出现网络超时，5S
+     * 如果微信未能成功获取我们的响应，就会重复发送支付通知
+     *
      */
     @ApiOperation("支付通知")
     @PostMapping("/native/notify")
@@ -101,6 +105,7 @@ public class WxPayController {
             wxPayService.processOrder(bodyMap);
 
             // 测试超时应答：添加睡眠时间使应答超时
+            // 模拟超时，微信会重复请求，需要排除已处理过的订单
             // TimeUnit.SECONDS.sleep(5);
             response.setStatus(200);
             map.put("code", "SUCCESS");

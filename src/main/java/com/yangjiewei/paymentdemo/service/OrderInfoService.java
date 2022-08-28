@@ -27,4 +27,9 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * 更新订单支付状态
      */
     void updateStatusByOrderNo(String orderNo, OrderStatus orderStatus);
+
+    /**
+     * 根据订单号获取订单状态
+     */
+    String getOrderStatus(String orderNo);
 }
