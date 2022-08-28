@@ -1,5 +1,6 @@
 package com.yangjiewei.paymentdemo.service;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
@@ -22,4 +23,10 @@ public interface WxPayService {
      * @throws GeneralSecurityException
      */
     void processOrder(Map<String, Object> bodyMap) throws GeneralSecurityException;
+
+    /**
+     * 取消订单
+     * @param orderNo
+     */
+    void cancelOrder(String orderNo) throws IOException;
 }
