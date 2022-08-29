@@ -29,4 +29,9 @@ public interface WxPayService {
      * @param orderNo
      */
     void cancelOrder(String orderNo) throws IOException;
+
+    /**
+     * 查询订单
+     */
+    String queryOrder(String orderNo) throws IOException;
 }

@@ -135,6 +135,27 @@ public class WxPayController {
         return R.ok().setMessage("订单已取消");
     }
 
+    /**
+     * 微信支付查单API
+     * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_2.shtml
+     * 商户可以通过查询订单接口主动查询订单状态，完成下一步的业务逻辑。查询订单状态可通过微信支付订单号或商户订单号两种方式查询
+     * 通常商户后台未收到异步支付结果通知时，商户主动调用查单接口，同步订单状态。
+     * {
+     *   "code": 0,
+     *   "message": "查询成功",
+     *   "data": {
+     *     "bodyAsString": "{\"amount\":{\"currency\":\"CNY\",\"payer_currency\":\"CNY\",\"payer_total\":1,\"total\":1},\"appid\":\"wx74862e0dfcf69954\",\"attach\":\"\",\"bank_type\":\"OTHERS\",\"mchid\":\"1558950191\",\"out_trade_no\":\"ORDER_20220828172344338\",\"payer\":{\"openid\":\"oHwsHuCgDFPyqFo2Sawg6yA0Pu4A\"},\"promotion_detail\":[],\"success_time\":\"2022-08-28T17:23:59+08:00\",\"trade_state\":\"SUCCESS\",\"trade_state_desc\":\"支付成功\",\"trade_type\":\"NATIVE\",\"transaction_id\":\"4200001550202208284738686219\"}"
+     *   }
+     * }
+     */
+    @ApiOperation("查询订单：测试订单状态用")
+    @GetMapping("/query/{orderNo}")
+    public R queryOrder(@PathVariable String orderNo) throws IOException {
+        log.info("查询订单");
+        String bodyAsString = wxPayService.queryOrder(orderNo);
+        return R.ok().setMessage("查询成功").data("bodyAsString", bodyAsString);
+    }
+
 
 
 }
