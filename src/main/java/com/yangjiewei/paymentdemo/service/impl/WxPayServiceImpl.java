@@ -267,6 +267,17 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     /**
+     * 根据订单号查询微信支付查单接口，核实订单状态
+     * 如果订单已支付，则更新商户端订单状态，并记录支付日志
+     * 如果订单未支付，则调用关单接口关闭订单，并更新商户端订单状态
+     * @param orderNo
+     */
+    @Override
+    public void checkOrderStatus(String orderNo) {
+        // todo
+    }
+
+    /**
      * 关单接口调用
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_3.shtml
      * 以下情况需要调用关单接口：
