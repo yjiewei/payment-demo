@@ -39,5 +39,5 @@ public interface WxPayService {
      * 核实订单状态
      * @param orderNo
      */
-    void checkOrderStatus(String orderNo);
+    void checkOrderStatus(String orderNo) throws IOException;
 }
