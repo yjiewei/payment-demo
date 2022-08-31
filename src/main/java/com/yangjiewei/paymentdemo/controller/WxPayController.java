@@ -156,6 +156,18 @@ public class WxPayController {
         return R.ok().setMessage("查询成功").data("bodyAsString", bodyAsString);
     }
 
-
+    /**
+     * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_9.shtml
+     * @return
+     */
+    @ApiOperation("申请退款")
+    @PostMapping("/refunds/{orderNo}/{reason}")
+    public R refunds(@PathVariable String orderNo,
+                     @PathVariable String reason) throws IOException {
+        log.info("申请退款");
+        // 保存退款记录，调用微信退款接口，更新订单状态，更新退款单
+        wxPayService.refund(orderNo, reason);
+        return R.ok();
+    }
 
 }
