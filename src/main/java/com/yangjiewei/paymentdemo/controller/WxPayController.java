@@ -174,6 +174,13 @@ public class WxPayController {
      * 查询退款情况
      * @param refundNo 退款编号，商户内部生成
      * @return
+     * {
+     *   "code": 0,
+     *   "message": "查询成功",
+     *   "data": {
+     *     "result": "{\"amount\":{\"currency\":\"CNY\",\"discount_refund\":0,\"from\":[],\"payer_refund\":1,\"payer_total\":1,\"refund\":1,\"settlement_refund\":1,\"settlement_total\":1,\"total\":1},\"channel\":\"ORIGINAL\",\"create_time\":\"2022-08-31T15:50:34+08:00\",\"funds_account\":\"AVAILABLE\",\"out_refund_no\":\"REFUND_20220831155032315\",\"out_trade_no\":\"ORDER_20220828172344338\",\"promotion_detail\":[],\"refund_id\":\"50302003012022083124382080035\",\"status\":\"SUCCESS\",\"success_time\":\"2022-08-31T15:50:41+08:00\",\"transaction_id\":\"4200001550202208284738686219\",\"user_received_account\":\"支付用户零钱\"}"
+     *   }
+     * }
      */
     @ApiOperation("查询退款：测试用")
     @GetMapping("/query-refund/{refundNo}")
