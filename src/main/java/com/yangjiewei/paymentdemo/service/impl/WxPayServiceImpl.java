@@ -377,6 +377,35 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     /**
+     * 查询退款使用
+     * @param refundNo
+     * @return
+     */
+    @Override
+    public String queryRefund(String refundNo) throws IOException {
+        log.info("查询退款...");
+        String url = wxPayConfig.getDomain().concat(String.format(WxApiType.DOMESTIC_REFUNDS_QUERY.getType(), refundNo));
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept", "application/json");
+        CloseableHttpResponse response = wxPayClient.execute(httpGet);
+        // 解析响应
+        try {
+            String bodyAsString = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                log.info("成功, 查询退款返回结果 = " + bodyAsString);
+            } else if (statusCode == 204) {
+                log.info("成功");
+            } else {
+                throw new RuntimeException("查询退款异常, 响应码 = " + statusCode+ ", 返回结果 = " + bodyAsString);
+            }
+            return bodyAsString;
+        } finally {
+            response.close();
+        }
+    }
+
+    /**
      * 关单接口调用
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_3.shtml
      * 以下情况需要调用关单接口：
