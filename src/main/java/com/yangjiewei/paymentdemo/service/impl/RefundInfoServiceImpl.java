@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.Gson;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.entity.RefundInfo;
+import com.yangjiewei.paymentdemo.enums.wxpay.WxRefundStatus;
 import com.yangjiewei.paymentdemo.mapper.RefundInfoMapper;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
 import com.yangjiewei.paymentdemo.service.RefundInfoService;
@@ -12,7 +13,10 @@ import com.yangjiewei.paymentdemo.util.OrderNoUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -76,5 +80,19 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
         //更新退款单
         baseMapper.update(refundInfo, queryWrapper);
+    }
+
+    /**
+     * 查询一定时间范围内退款未成功的退款单
+     * @param minutes
+     * @return
+     */
+    @Override
+    public List<RefundInfo> getNoRefundOrderByDuration(int minutes) {
+        Instant instant = Instant.now().minus(Duration.ofMinutes(minutes));
+        QueryWrapper<RefundInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("refund_status", WxRefundStatus.PROCESSING.getType());
+        queryWrapper.le("create_time", instant);
+        return baseMapper.selectList(queryWrapper);
     }
 }

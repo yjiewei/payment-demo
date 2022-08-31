@@ -406,6 +406,15 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     /**
+     * 核实订单状态：调用微信支付查询退款接口
+     * @param refundNo
+     */
+    @Override
+    public void checkRefundStatus(String refundNo) {
+        // todo
+    }
+
+    /**
      * 关单接口调用
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_3.shtml
      * 以下情况需要调用关单接口：
