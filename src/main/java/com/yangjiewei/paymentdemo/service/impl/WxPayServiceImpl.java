@@ -8,6 +8,7 @@ import com.yangjiewei.paymentdemo.entity.RefundInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxApiType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxNotifyType;
+import com.yangjiewei.paymentdemo.enums.wxpay.WxRefundStatus;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxTradeState;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
 import com.yangjiewei.paymentdemo.service.PaymentInfoService;
@@ -410,8 +411,46 @@ public class WxPayServiceImpl implements WxPayService {
      * @param refundNo
      */
     @Override
-    public void checkRefundStatus(String refundNo) {
+    public void checkRefundStatus(String refundNo) throws IOException {
+        // 1.查询退款订单
+        String refund = this.queryRefund(refundNo);
+
+        // 2.解析响应信息
+        Gson gson = new Gson();
+        Map<String, Object> refundMap = gson.fromJson(refund, HashMap.class);
+        // 获取微信支付端退款状态
+        String status = (String) refundMap.get("status");
+        String orderNo = (String) refundMap.get("out_trade_no");
+        if (WxRefundStatus.SUCCESS.getType().equals(status)) {
+            // 已经成功退款
+            log.info("核实订单已经成功退款，orderNo:{}, refundNo:{}", orderNo, refundNo);
+            // 3.更新订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_SUCCESS);
+            // 4.更新退款单
+            refundInfoService.updateRefund(refund);
+        }
+        if (WxRefundStatus.ABNORMAL.getType().equals(status)) {
+            // 退款异常
+            log.warn("退款异常，orderNo:{}, refundNo:{}", orderNo, refundNo);
+            // 3.更新订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_ABNORMAL);
+            // 4.更新退款单
+            refundInfoService.updateRefund(refund);
+        }
+
+    }
+
+
+    @Override
+    public void processRefund(Map<String, Object> dataMap) {
         // todo
+        // 1.日志记录、上可重入锁
+
+        // 2.转换响应中的密文
+
+        // 3.根据退款情况处理订单
+
+        // 4.更新退款单
     }
 
     /**
