@@ -442,15 +442,35 @@ public class WxPayServiceImpl implements WxPayService {
 
 
     @Override
-    public void processRefund(Map<String, Object> dataMap) {
-        // todo
+    @Transactional(rollbackFor = Exception.class)
+    public void processRefund(Map<String, Object> dataMap) throws Exception {
         // 1.日志记录、上可重入锁
+        log.info("处理退款订单...");
 
         // 2.转换响应中的密文
+        String plainText = decryptFromResource(dataMap);
+        // 将明文转换成map
+        Gson gson = new Gson();
+        HashMap plainTextMap = gson.fromJson(plainText, HashMap.class);
+        String orderNo = (String)plainTextMap.get("out_trade_no");
 
         // 3.根据退款情况处理订单
-
-        // 4.更新退款单
+        if (lock.tryLock()) {
+            try {
+                String orderStatus = orderInfoService.getOrderStatus(orderNo);
+                // 订单状态不是退款中，则直接返回 fixme 不是特别理解 不是退款中，那么就是退款成功或者退款异常，状态不变即可。
+                if (!OrderStatus.REFUND_PROCESSING.getType().equals(orderStatus)) {
+                    return;
+                }
+                // 3.更新订单状态
+                orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_SUCCESS);
+                // 4.更新退款单
+                refundInfoService.updateRefund(plainText);
+            } finally {
+                // 5.要主动释放锁
+                lock.unlock();
+            }
+        }
     }
 
     /**

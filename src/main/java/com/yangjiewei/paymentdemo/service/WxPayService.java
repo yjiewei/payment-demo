@@ -65,5 +65,5 @@ public interface WxPayService {
      * 处理退款订单
      * @param dataMap
      */
-    void processRefund(Map<String, Object> dataMap);
+    void processRefund(Map<String, Object> dataMap) throws Exception;
 }
