@@ -243,4 +243,24 @@ public class WxPayController {
         }
     }
 
+
+    /**
+     * 获取交易账单URL
+     * 微信支付按天提供交易账单文件，服务商可以通过该接口获取账单文件的下载地址。
+     * 文件内包含交易相关的金额、时间、营销等信息，供商户核对订单、退款、银行到账等情况。
+     * @param billDate
+     * @param type
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation("获取账单url：测试用")
+    @GetMapping("/querybill/{billDate}/{type}")
+    public R queryTradeBill(
+            @PathVariable String billDate,
+            @PathVariable String type) throws Exception {
+        log.info("获取交易账单URL");
+        String downloadUrl = wxPayService.queryBill(billDate, type);
+        return R.ok().setMessage("获取交易账单URL成功").data("downloadUrl", downloadUrl);
+    }
+
 }

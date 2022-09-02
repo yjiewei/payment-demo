@@ -66,4 +66,9 @@ public interface WxPayService {
      * @param dataMap
      */
     void processRefund(Map<String, Object> dataMap) throws Exception;
+
+    /**
+     * 获取交易账单URL
+     */
+    String queryBill(String billDate, String type) throws IOException;
 }
