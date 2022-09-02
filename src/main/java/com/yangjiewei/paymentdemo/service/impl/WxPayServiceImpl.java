@@ -515,6 +515,34 @@ public class WxPayServiceImpl implements WxPayService {
         }
     }
 
+    @Override
+    public String downloadBill(String billDate, String type) throws IOException {
+        // 1.日志记录
+        log.info("下载{}的账单，类型是{}", billDate, type);
+
+        // 2.获取交易账单URL
+        String downloadUrl = this.queryBill(billDate, type);
+
+        // 3.下载账单
+        HttpGet httpGet = new HttpGet(downloadUrl);
+        httpGet.addHeader("Accept", "application/json");
+        CloseableHttpResponse response = wxPayClient.execute(httpGet);
+        try {
+            String bodyAsString = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                log.info("成功, 下载账单返回结果 = " + bodyAsString);
+            } else if (statusCode == 204) {
+                log.info("成功");
+            } else {
+                throw new RuntimeException("下载账单异常, 响应码 = " + statusCode+ ", 下载账单返回结果 = " + bodyAsString);
+            }
+            return bodyAsString;
+        } finally {
+            response.close();
+        }
+    }
+
     /**
      * 关单接口调用
      * https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_3.shtml

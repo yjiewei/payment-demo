@@ -71,4 +71,12 @@ public interface WxPayService {
      * 获取交易账单URL
      */
     String queryBill(String billDate, String type) throws IOException;
+
+    /**
+     * 下载账单
+     * @param billDate
+     * @param type
+     * @return
+     */
+    String downloadBill(String billDate, String type) throws IOException;
 }
