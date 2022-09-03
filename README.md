@@ -27,11 +27,13 @@
    
     https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_4_5.shtml
     
-    每个人的认证信息不一致，需要自行注册账号。
+    每个人的认证信息不一致，需要自行注册账号，更改认证信息
    
     认证信息：C:\Users\yangjiewei/.ngrok2/ngrok.yml
     
     官网地址：https://ngrok.com/
+    
+    启动ngrok，然后输入命令：ngrok http 8090，就可以获取地址了。
     
     Web Interface     http://127.0.0.1:4040
     
@@ -44,6 +46,12 @@
     注意每次启动访问地址都不同，需要改动配置。
     
 3. try catch快捷键 ctrl+win+alt+t
+
+4. MySQL时区问题
+
+    由于MySQL的默认时区没有加8小时，导致我的订单每次都超时关闭了，这里在application.yml指定mysql连接是没有作用的，需要修改数据库变量才行。
+    
+    参考这篇文章：https://blog.csdn.net/cm15835106905/article/details/124696976
 
 ## 二、支付宝支付
 
