@@ -11,6 +11,7 @@ import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Credentials;
 import com.wechat.pay.contrib.apache.httpclient.auth.WechatPay2Validator;
 import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
+@Slf4j
 @Data // 使用set方法将wxpay节点中的值填充到当前类属性中
 @Configuration
 @PropertySource("classpath:wxpay.properties") // 读取配置文件
@@ -86,7 +88,7 @@ public class WxPayConfig {
      * https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient （定时更新平台证书功能）
      * HttpClient 对象：是建立远程连接的基础，我们通过SDK创建这个对象
      */
-    @Bean
+    @Bean(name = "wxPayClient")
     public CloseableHttpClient getWxPayClient(ScheduledUpdateCertificatesVerifier verifier){
         //获取商户私钥
         PrivateKey privateKey = getPrivateKey(privateKeyPath);
@@ -98,6 +100,25 @@ public class WxPayConfig {
         // 通过WechatPayHttpClientBuilder构造的HttpClient，会自动的处理签名和验签，并进行证书自动更新
         CloseableHttpClient httpClient = builder.build();
         return httpClient;
+    }
+
+    /**
+     * 获取无需验证响应签名的httpClient对象
+     * @param verifier
+     * @return
+     */
+    @Bean(name = "wxPayNoSignClient")
+    public CloseableHttpClient getWxPayNoSignClient(ScheduledUpdateCertificatesVerifier verifier){
+        log.info("初始化wxPayNoSignClient");
+        //获取商户私钥
+        PrivateKey privateKey = getPrivateKey(privateKeyPath);
+        WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
+                .withMerchant(mchId, mchSerialNo, privateKey)
+                //设置响应对象无需签名
+                .withValidator((response) -> true);
+        CloseableHttpClient wxPayNoSignClient = builder.build();
+        log.info("wxPayNoSignClient初始化完成");
+        return wxPayNoSignClient;
     }
 
 }

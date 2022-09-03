@@ -64,6 +64,12 @@ public class WxPayServiceImpl implements WxPayService {
     @Resource
     private CloseableHttpClient wxPayClient;
 
+    /**
+     * 获取微信支付的httpClient，不对响应进行验签
+     */
+    @Resource
+    private CloseableHttpClient wxPayNoSignClient;
+
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
@@ -526,7 +532,8 @@ public class WxPayServiceImpl implements WxPayService {
         // 3.下载账单
         HttpGet httpGet = new HttpGet(downloadUrl);
         httpGet.addHeader("Accept", "application/json");
-        CloseableHttpResponse response = wxPayClient.execute(httpGet);
+        // todo 为什么这里不能对响应进行验签？并且验不过  因为人家没有进行签名
+        CloseableHttpResponse response = wxPayNoSignClient.execute(httpGet);
         try {
             String bodyAsString = EntityUtils.toString(response.getEntity());
             int statusCode = response.getStatusLine().getStatusCode();

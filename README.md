@@ -53,6 +53,28 @@
     
     参考这篇文章：https://blog.csdn.net/cm15835106905/article/details/124696976
 
+5. 下载交易订单时显示账单日期格式不正确，是因为你不能下载当天的账单，只能第二天才去下载。
+
+6. 下载交易订单显示 Caused by: org.apache.http.HttpException: 应答的微信支付签名验证失败
+    
+    com/yangjiewei/paymentdemo/config/WxPayConfig.java:111
+    
+    https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient
+    
+    https://developers.weixin.qq.com/community/develop/article/doc/0008ccfe4680f0fe2d2e63f0756813
+    
+    下载账单文件可能过大，为了平衡性能和签名验签成本，这里已经分为两步进行了，第一步获取账单连接，这里已经验证签名，第二步微信不设置响应签名，这里我们就不需要再次验签了，官网有说明。
+    
+    ```text
+    因为下载的账单文件可能会很大，为了平衡系统性能和签名验签的实现成本，账单下载API被分成了两个步骤：
+    
+    /v3/bill/tradebill 获取账单下载链接和账单摘要
+    /v3/billdownload/file 账单文件下载，请求需签名但应答不签名
+    因为第二步不包含应答签名，我们可以参考上一个问题下载平台证书的方法，使用withValidator(response -> true)“跳过”应答的签名校验。
+    
+    注意：开发者在下载文件之后，应使用第一步获取的账单摘要校验文件的完整性。
+    ```
+
 ## 二、支付宝支付
 
 
