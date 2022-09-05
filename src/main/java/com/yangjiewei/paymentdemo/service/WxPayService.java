@@ -79,4 +79,12 @@ public interface WxPayService {
      * @return
      */
     String downloadBill(String billDate, String type) throws IOException;
+
+    /**
+     * native下单V2
+     * @param productId
+     * @param remoteAddr
+     * @return
+     */
+    Map<String,Object> nativePayV2(Long productId, String remoteAddr) throws Exception;
 }

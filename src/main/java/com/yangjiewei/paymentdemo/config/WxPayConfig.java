@@ -44,6 +44,8 @@ public class WxPayConfig {
 
     private String notifyDomain;
 
+    private String partnerKey;
+
     /**
      * 获取商户私钥
      * https://github.com/wechatpay-apiv3/wechatpay-apache-httpclient
