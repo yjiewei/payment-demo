@@ -85,6 +85,20 @@
             <artifactId>gson</artifactId>
         </dependency>
 
+        <!--微信支付 v2版本-->
+        <dependency>
+            <groupId>com.github.wxpay</groupId>
+            <artifactId>wxpay-sdk</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
+        <!--支付宝 SDK-->
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay-sdk-java</artifactId>
+            <version>4.22.57.ALL</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
