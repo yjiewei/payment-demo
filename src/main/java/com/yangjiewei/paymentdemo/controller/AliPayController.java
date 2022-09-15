@@ -4,6 +4,7 @@
  */
 package com.yangjiewei.paymentdemo.controller;
 
+import com.alipay.api.AlipayApiException;
 import com.yangjiewei.paymentdemo.service.AliPayService;
 import com.yangjiewei.paymentdemo.vo.R;
 import io.swagger.annotations.Api;
@@ -28,8 +29,10 @@ public class AliPayController {
      */
     @ApiOperation("统一收单下单并支付页面接口的调用")
     @PostMapping("/trade/page/pay/{productId}")
-    public R tradePagePay(@PathVariable Long productId) {
-        // todo
-        return null;
+    public R tradePagePay(@PathVariable Long productId) throws AlipayApiException {
+        // 记录日志 下单 返回数据
+        log.info("统一收单下单并支付页面接口调用");
+        String formStr = aliPayService.tradeCreate(productId);
+        return R.ok().data("formStr", formStr);
     }
 }

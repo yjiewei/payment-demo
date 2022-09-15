@@ -50,7 +50,7 @@ public class WxPayTask {
      * 定时查找超时订单
      * 从第0秒开始每隔30秒执行1次，查询创建超过5分钟，并且未支付的订单
      */
-    @Scheduled(cron = "0/30 * * * * ?")
+    //@Scheduled(cron = "0/30 * * * * ?")
     public void orderConfirm() throws Exception {
         log.info("orderConfirm执行，定时查找超时订单...");
         List<OrderInfo> orderInfoList = orderInfoService.getNoPayOrderByDuration(5);
@@ -65,7 +65,7 @@ public class WxPayTask {
     /**
      * 从第0秒开始每隔30秒执行1次，查询创建超过5分钟，并且未成功的退款单
      */
-    @Scheduled(cron = "0/30 * * * * ?")
+    //@Scheduled(cron = "0/30 * * * * ?")
     public void refundConfirm() throws Exception {
         log.info("refundConfirm 被执行......");
         // 找出申请退款超过5分钟并且未成功的退款单
