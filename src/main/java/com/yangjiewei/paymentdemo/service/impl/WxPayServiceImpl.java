@@ -7,6 +7,7 @@ import com.yangjiewei.paymentdemo.config.WxPayConfig;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.entity.RefundInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
+import com.yangjiewei.paymentdemo.enums.PayType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxApiType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxNotifyType;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxRefundStatus;
@@ -105,7 +106,7 @@ public class WxPayServiceImpl implements WxPayService {
         log.info("1.生成订单");
 
         String codeUrl;
-        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId);
+        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId, PayType.WXPAY.getType());
         if (Objects.nonNull(orderInfo ) && !StringUtils.isEmpty(orderInfo.getCodeUrl())) {
             log.info("订单已存在，二维码已保存");
             log.info("订单号:{}，二维码:{}", orderInfo.getOrderNo(), orderInfo.getCodeUrl());
@@ -565,7 +566,7 @@ public class WxPayServiceImpl implements WxPayService {
 
         // 2.生成订单
         String codeUrl;
-        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId);
+        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId, PayType.WXPAY.getType());
         if (Objects.nonNull(orderInfo) && !StringUtils.isEmpty(orderInfo.getCodeUrl())) {
             log.info("订单已存在，二维码已保存");
             codeUrl = orderInfo.getCodeUrl();

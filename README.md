@@ -107,6 +107,12 @@
    公共响应参数：所有接⼝的响应中都包含的数据
    
    响应参数：当前接⼝的响应中包含的数据
+   
+3. 支付成功之后的回调通知验签失败
+    
+   `boolean signVerified = AlipaySignature.rsaCheckV1(params, config.getProperty("alipay.alipay-public-key"), CHARSET_UTF8, SIGN_TYPE_RSA2);`
+   
+   
 
 
 # 延伸阅读

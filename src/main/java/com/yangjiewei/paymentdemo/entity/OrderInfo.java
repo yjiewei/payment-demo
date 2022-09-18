@@ -23,4 +23,6 @@ public class OrderInfo  extends BaseEntity{
     private String codeUrl;//订单二维码连接
 
     private String orderStatus;//订单状态
+
+    private String paymentType;// 支付类型
 }

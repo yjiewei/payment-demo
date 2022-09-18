@@ -29,9 +29,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * 保存订单
      */
     @Override
-    public OrderInfo createOrderByProductId(Long productId) {
+    public OrderInfo createOrderByProductId(Long productId, String paymentType) {
         // 1.查找已存在但未支付的订单  这里没有用用户去做区分，这里仅用商品
-        OrderInfo orderInfo = this.getNoPayOrderByProductId(productId);
+        OrderInfo orderInfo = this.getNoPayOrderByProductId(productId, paymentType);
         if (Objects.nonNull(orderInfo)) {
             log.info("存在未支付的订单，订单id：{}", orderInfo.getId());
             return orderInfo;
@@ -43,6 +43,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 3.生成订单
         orderInfo = new OrderInfo();
         orderInfo.setTitle(product.getTitle());
+        orderInfo.setPaymentType(paymentType);
         orderInfo.setOrderNo(OrderNoUtils.getOrderNo());
         orderInfo.setProductId(productId);
         orderInfo.setTotalFee(product.getPrice());
@@ -134,10 +135,11 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 查找已存在但未支付的订单,防止重复创建订单对象
      */
-    private OrderInfo getNoPayOrderByProductId(Long productId) {
+    private OrderInfo getNoPayOrderByProductId(Long productId, String paymentType) {
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("product_id", productId);
         queryWrapper.eq("order_status", OrderStatus.NOTPAY.getType());
+        queryWrapper.eq("payment_type", paymentType);
         //queryWrapper.eq("user_id", userId);
         return baseMapper.selectOne(queryWrapper);
     }

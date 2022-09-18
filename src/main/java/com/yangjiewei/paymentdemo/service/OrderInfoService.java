@@ -11,7 +11,7 @@ public interface OrderInfoService extends IService<OrderInfo> {
     /**
      * 保存订单
      */
-    OrderInfo createOrderByProductId(Long productId);
+    OrderInfo createOrderByProductId(Long productId, String paymentType);
 
     /**
      * 缓存二维码
