@@ -131,5 +131,17 @@ public class AliPayController {
         return R.ok().setMessage("订单已取消");
     }
 
+    /**
+     * 4.统⼀收单线下交易查询
+     *   商户后台不一定每次收到异步支付结果通知，商户应该主动调用订单查询接口，同步订单状态
+     *   这里只是测试用，实际上需要定时任务去处理，去查一定时间范围内未支付的订单，是不是只是没收到支付结果通知，但实际已经支付
+     */
+    @ApiOperation("查询订单：测试订单状态用")
+    @GetMapping("/trade/query/{orderNo}")
+    public R queryOrder(@PathVariable String orderNo) {
+        log.info("查询订单");
+        String result = aliPayService.queryOrder(orderNo);
+        return R.ok().setMessage("查询成功").data("result", result);
+    }
 
 }

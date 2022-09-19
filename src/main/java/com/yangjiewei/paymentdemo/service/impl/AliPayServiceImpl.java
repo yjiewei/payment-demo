@@ -9,8 +9,10 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.PayType;
@@ -130,6 +132,34 @@ public class AliPayServiceImpl implements AliPayService {
 
         orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.CANCEL);
 
+    }
+
+    /**
+     * 查询订单
+     * @param orderNo
+     * @return 返回订单查询结果，如果返回null则表示支付宝端尚未创建订单
+     */
+    @Override
+    public String queryOrder(String orderNo) {
+        try {
+            log.info("查单接口调用:{}", orderNo);
+            AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("out_trade_no", orderNo);
+            request.setBizContent(bizContent.toString());
+            AlipayTradeQueryResponse response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                log.info("调用成功，返回结果:{}", response.getBody());
+                return response.getBody();
+            } else {
+                log.info("调用失败，返回码:{}, 返回描述:{} ", response.getCode(), response.getMsg() + " " + response.getSubMsg());
+                // 订单不存在
+                return null;
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            throw new RuntimeException("查单接口的调用失败");
+        }
     }
 
     /**

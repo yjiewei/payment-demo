@@ -26,4 +26,11 @@ public interface AliPayService {
      * @param orderNo
      */
     void cancelOrder(String orderNo);
+
+    /**
+     * 查询订单
+     * @param orderNo
+     * @return 返回订单查询结果，如果返回null则表示支付宝端尚未创建订单
+     */
+    String queryOrder(String orderNo);
 }
