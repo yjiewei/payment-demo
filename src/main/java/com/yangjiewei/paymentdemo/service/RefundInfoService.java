@@ -11,5 +11,5 @@ public interface RefundInfoService extends IService<RefundInfo> {
 
     void updateRefund(String content);
 
-    List<RefundInfo> getNoRefundOrderByDuration(int i);
+    List<RefundInfo> getNoRefundOrderByDuration(int i, String payType);
 }

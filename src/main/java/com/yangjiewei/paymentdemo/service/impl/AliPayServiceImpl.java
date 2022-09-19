@@ -13,9 +13,12 @@ import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.google.gson.Gson;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.PayType;
+import com.yangjiewei.paymentdemo.enums.alipay.AliTradeState;
+import com.yangjiewei.paymentdemo.enums.wxpay.WxTradeState;
 import com.yangjiewei.paymentdemo.service.AliPayService;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
 import com.yangjiewei.paymentdemo.service.PaymentInfoService;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -159,6 +163,44 @@ public class AliPayServiceImpl implements AliPayService {
         } catch (AlipayApiException e) {
             e.printStackTrace();
             throw new RuntimeException("查单接口的调用失败");
+        }
+    }
+
+    /**
+     * 查看订单状态
+     * 如果订单未创建，则更新商户端订单状态
+     * 如果订单未支付，则调用关单接口关闭订单，并更新商户端订单状态
+     * 如果订单已支付，则更新商户端订单状态，并记录支付日志
+     * @param orderNo
+     */
+    @Override
+    public void checkOrderStatus(String orderNo) {
+        log.warn("根据订单号核实订单状态 orderNo:{}", orderNo);
+        // 1.调用微信支付查单接口
+        String result = this.queryOrder(orderNo);
+
+        // 2.转换响应参数
+        Gson gson = new Gson();
+        Map resultMap = gson.fromJson(result, HashMap.class);
+
+        // 3.获取微信支付端的订单状态
+        String tradeState = (String) resultMap.get("trade_state");
+
+        // 4.判断订单状态 确认已支付则更新订单状态，否则关闭订单
+        if (AliTradeState.SUCCESS.getStatus().equals(tradeState)) {
+            log.warn("核实订单已支付，orderNo:{}", orderNo);
+            // 如果确认订单已支付则更新本地订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.SUCCESS);
+            // 记录支付日志
+            paymentInfoService.createPaymentInfo(result);
+        }
+
+        if (AliTradeState.NOTPAY.getStatus().equals(tradeState)) {
+            log.warn("核实订单未支付，orderNo:{}", orderNo);
+            // 订单未支付，则调用关单接口
+            this.closeOrder(orderNo);
+            // 更新本地订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.CLOSED);
         }
     }
 

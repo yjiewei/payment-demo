@@ -88,11 +88,12 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
      * @return
      */
     @Override
-    public List<RefundInfo> getNoRefundOrderByDuration(int minutes) {
+    public List<RefundInfo> getNoRefundOrderByDuration(int minutes, String payType) {
         Instant instant = Instant.now().minus(Duration.ofMinutes(minutes));
         QueryWrapper<RefundInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("refund_status", WxRefundStatus.PROCESSING.getType());
         queryWrapper.le("create_time", instant);
+        queryWrapper.eq("payment_type", payType);
         return baseMapper.selectList(queryWrapper);
     }
 }

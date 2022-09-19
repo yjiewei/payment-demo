@@ -33,4 +33,10 @@ public interface AliPayService {
      * @return 返回订单查询结果，如果返回null则表示支付宝端尚未创建订单
      */
     String queryOrder(String orderNo);
+
+    /**
+     * 查看订单状态
+     * @param orderNo
+     */
+    void checkOrderStatus(String orderNo);
 }

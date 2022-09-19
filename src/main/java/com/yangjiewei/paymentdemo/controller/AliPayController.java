@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.yangjiewei.paymentdemo.enums.alipay.AliTradeState.TRADE_SUCCESS;
+import static com.yangjiewei.paymentdemo.enums.alipay.AliTradeState.SUCCESS;
 
 @Slf4j
 @CrossOrigin
@@ -98,7 +98,7 @@ public class AliPayController {
                 }
                 // 在支付宝的业务通知中，只有交易通知状态为 TRADE_SUCCESS 或 TRADE_FINISHED 时，支付宝才会认定为买家付款成功
                 String tradeStatus = params.get("trade_status");
-                if(!TRADE_SUCCESS.getStatus().equals(tradeStatus)){
+                if(!SUCCESS.getStatus().equals(tradeStatus)){
                     log.error("支付未成功");
                     return result;
                 }

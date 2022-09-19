@@ -111,12 +111,13 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      * 找出创建超过minutes分钟并且未支付的订单
      */
     @Override
-    public List<OrderInfo> getNoPayOrderByDuration(int minutes) {
+    public List<OrderInfo> getNoPayOrderByDuration(int minutes, String payType) {
         // 比当前时间少五分钟
         Instant instant = Instant.now().minus(Duration.ofMinutes(minutes));
         QueryWrapper<OrderInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("order_status", OrderStatus.NOTPAY.getType());
         queryWrapper.le("create_time", instant);
+        queryWrapper.eq("payment_type", payType);
         return baseMapper.selectList(queryWrapper);
     }
 
