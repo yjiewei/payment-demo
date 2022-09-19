@@ -10,11 +10,14 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.google.gson.Gson;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
+import com.yangjiewei.paymentdemo.entity.RefundInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.PayType;
 import com.yangjiewei.paymentdemo.enums.alipay.AliTradeState;
@@ -22,6 +25,7 @@ import com.yangjiewei.paymentdemo.enums.wxpay.WxTradeState;
 import com.yangjiewei.paymentdemo.service.AliPayService;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
 import com.yangjiewei.paymentdemo.service.PaymentInfoService;
+import com.yangjiewei.paymentdemo.service.RefundInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -50,6 +54,9 @@ public class AliPayServiceImpl implements AliPayService {
     private PaymentInfoService paymentInfoService;
 
     private final ReentrantLock lock = new ReentrantLock();
+
+    @Resource
+    private RefundInfoService refundInfoService;
 
     @Override
     @Transactional // 允许回滚
@@ -201,6 +208,47 @@ public class AliPayServiceImpl implements AliPayService {
             this.closeOrder(orderNo);
             // 更新本地订单状态
             orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.CLOSED);
+        }
+    }
+
+    /**
+     * 根据订单号退款
+     * @param orderNo
+     * @param reason 退款原因
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void refund(String orderNo, String reason) {
+        try {
+            log.info("调用退款api");
+            // 1.创建退款订单
+            RefundInfo refundInfo = refundInfoService.createRefundByOrderNo(orderNo, reason);
+
+            // 2.封装参数 调用退款接口
+            AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+            //组装当前业务方法的请求参数
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("out_trade_no", orderNo);
+            BigDecimal refund = new BigDecimal(refundInfo.getRefund().toString()).divide(new BigDecimal("100"));
+            //BigDecimal refund = new BigDecimal("2").divide(new BigDecimal("100"));
+            bizContent.put("refund_amount", refund);//退款金额：不能大于支付金额
+            bizContent.put("refund_reason", reason);//退款原因(可选)
+            request.setBizContent(bizContent.toString());
+
+            //执行请求，调用支付宝接口
+            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            if (response.isSuccess()) {
+                log.info("退款接口调用成功，退款内容是:{}", response.getBody());
+                // 更新订单状态
+                orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_SUCCESS);
+
+                // 更新退款单
+                refundInfoService.updateRefundForAlipay(refundInfo.getRefundNo(),
+                        response.getBody(),
+                        AliTradeState.SUCCESS.getStatus());
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
         }
     }
 

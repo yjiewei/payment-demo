@@ -96,4 +96,25 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
         queryWrapper.eq("payment_type", payType);
         return baseMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 更新退款记录
+     * @param refundNo 退款单号
+     * @param body 退款响应内容
+     * @param status 状态
+     */
+    @Override
+    public void updateRefundForAlipay(String refundNo, String body, String status) {
+        // 1.设置要修改的字段
+        RefundInfo refundInfo = new RefundInfo();
+        refundInfo.setRefundStatus(status);//退款状态
+        refundInfo.setContentReturn(body);//将全部响应结果存入数据库的content字段
+
+        QueryWrapper<RefundInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("refund_no", refundNo);
+
+        // 2.更新退款单
+        baseMapper.update(refundInfo, queryWrapper);
+
+    }
 }

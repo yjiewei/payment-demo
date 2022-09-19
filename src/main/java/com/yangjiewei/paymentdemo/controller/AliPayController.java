@@ -144,4 +144,18 @@ public class AliPayController {
         return R.ok().setMessage("查询成功").data("result", result);
     }
 
+    /**
+     * https://opendocs.alipay.com/open/02e7go
+     * 5.统一收单交易退款
+     */
+    @ApiOperation("申请退款")
+    @PostMapping("/trade/refund/{orderNo}/{reason}")
+    public R refunds(@PathVariable String orderNo, @PathVariable String reason){
+        log.info("申请退款...");
+        aliPayService.refund(orderNo, reason);
+        return R.ok().setMessage("退款成功");
+    }
+
+
+
 }
