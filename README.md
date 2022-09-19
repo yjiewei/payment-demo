@@ -93,6 +93,7 @@
    https://opendocs.alipay.com/open/270/105899
 
    ![调用](支付宝支付流程.png)
+
    
 2. 接口说明
 
@@ -108,11 +109,14 @@
    
    响应参数：当前接⼝的响应中包含的数据
    
+
 3. 支付成功之后的回调通知验签失败
     
    `boolean signVerified = AlipaySignature.rsaCheckV1(params, config.getProperty("alipay.alipay-public-key"), CHARSET_UTF8, SIGN_TYPE_RSA2);`
    
-   
+
+4. 针对⼆维码⽀付，只有经过扫码的订单才在⽀付宝端有交易记录。针对⽀付宝账号⽀付，只有经
+   过登录的订单才在⽀付宝端有交易记录。   
 
 
 # 延伸阅读

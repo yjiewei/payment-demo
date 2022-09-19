@@ -119,4 +119,17 @@ public class AliPayController {
         return result;
     }
 
+    /**
+     * 3.统⼀收单交易关闭
+     * 用户取消订单，需要调用支付宝关闭订单接口
+     */
+    @ApiOperation("统一收单交易关闭接口")
+    @PostMapping("/trade/close/{orderNo}")
+    public R cancel(@PathVariable String orderNo) {
+        log.info("取消订单");
+        aliPayService.cancelOrder(orderNo);
+        return R.ok().setMessage("订单已取消");
+    }
+
+
 }

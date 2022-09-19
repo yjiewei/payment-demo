@@ -7,7 +7,9 @@ package com.yangjiewei.paymentdemo.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.request.AlipayTradeCloseRequest;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.alipay.api.response.AlipayTradeCloseResponse;
 import com.alipay.api.response.AlipayTradePagePayResponse;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
@@ -114,6 +116,44 @@ public class AliPayServiceImpl implements AliPayService {
             }finally {
                 lock.unlock();
             }
+        }
+    }
+
+    /**
+     * 用户取消订单:关闭支付宝订单，修改商户订单状态
+     * @param orderNo
+     */
+    @Override
+    public void cancelOrder(String orderNo) {
+
+        this.closeOrder(orderNo);
+
+        orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.CANCEL);
+
+    }
+
+    /**
+     * 支付宝关单接口
+     * @param orderNo
+     */
+    private void closeOrder(String orderNo) {
+        try {
+            log.info("关单接口的调用，订单号:{}", orderNo);
+            AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("trade_no", "2013112611001004680073956707");
+            request.setBizContent(bizContent.toString());
+            AlipayTradeCloseResponse response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                log.info("关单接口调用成功");
+            } else {
+                log.warn("关单接口调用失败，返回状态码是:{}，描述信息是:{}", response.getCode(), response.getMsg());
+                // 为什么不抛异常呢？
+                // throw new RuntimeException("关单接口的调用失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("关单接口调用失败");
         }
     }
 }
