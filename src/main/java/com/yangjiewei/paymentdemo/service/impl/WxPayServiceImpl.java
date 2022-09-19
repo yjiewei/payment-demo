@@ -332,7 +332,7 @@ public class WxPayServiceImpl implements WxPayService {
 
         log.info("创建退款单记录");
         // 根据订单号创建退款单
-        RefundInfo refundInfo = refundInfoService.createRefundByOrderNo(orderNo, reason);
+        RefundInfo refundInfo = refundInfoService.createRefundByOrderNo(orderNo, reason, PayType.WXPAY.getType());
 
         log.info("调用微信退款接口");
         String url = wxPayConfig.getDomain().concat(WxApiType.DOMESTIC_REFUNDS.getType());

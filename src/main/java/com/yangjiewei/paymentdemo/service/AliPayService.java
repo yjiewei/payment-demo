@@ -46,4 +46,25 @@ public interface AliPayService {
      * @param reason
      */
     void refund(String orderNo, String reason);
+
+    /**
+     * 根据订单号查询退款单
+     * @param orderNo
+     * @return
+     */
+    String queryRefund(String orderNo);
+
+    /**
+     * 检查退款状态，并做对应的处理
+     * @param refundNo
+     */
+    void checkRefundStatus(String refundNo);
+
+    /**
+     * 查询账单地址
+     * @param billDate
+     * @param type
+     * @return
+     */
+    String queryBill(String billDate, String type);
 }

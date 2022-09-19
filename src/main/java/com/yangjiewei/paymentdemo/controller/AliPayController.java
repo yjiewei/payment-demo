@@ -5,7 +5,6 @@
 package com.yangjiewei.paymentdemo.controller;
 
 import com.alipay.api.AlipayApiException;
-import com.alipay.api.internal.util.AlipaySignature;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.service.AliPayService;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
@@ -156,6 +155,28 @@ public class AliPayController {
         return R.ok().setMessage("退款成功");
     }
 
+    /**
+     * 6.统⼀收单交易退款查询
+     * 这个也是用来测试的，退款查询是要定时任务
+     */
+    @ApiOperation("统⼀收单交易退款查询")
+    @GetMapping("/trade/fastpay/refund/{orderNo}")
+    public R queryRefund(@PathVariable String orderNo){
+        log.info("退款查询");
+        String result = aliPayService.queryRefund(orderNo);
+        return R.ok().setMessage("查询退款单成功").data("result", result);
+    }
 
+    /**
+     * 7.查询对账单下载地址接⼝
+     * 根据账单类型和日期获取账单url地址
+     */
+    @ApiOperation("获取账单url")
+    @GetMapping("/bill/downloadurl/query/{billDate}/{type}")
+    public R queryTradeBill(@PathVariable String billDate, @PathVariable String type) {
+        log.info("获取账单url");
+        String downloadUrl = aliPayService.queryBill(billDate, type);
+        return R.ok().setMessage("获取账单url成功").data("downloadUrl", downloadUrl);
+    }
 
 }

@@ -24,4 +24,6 @@ public class RefundInfo extends BaseEntity{
     private String contentReturn;//申请退款返回参数
 
     private String contentNotify;//退款结果通知参数
+
+    private String paymentType;
 }

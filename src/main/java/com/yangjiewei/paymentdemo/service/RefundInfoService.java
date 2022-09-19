@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RefundInfoService extends IService<RefundInfo> {
 
-    RefundInfo createRefundByOrderNo(String orderNo, String reason);
+    RefundInfo createRefundByOrderNo(String orderNo, String reason, String paymentType);
 
     void updateRefund(String content);
 

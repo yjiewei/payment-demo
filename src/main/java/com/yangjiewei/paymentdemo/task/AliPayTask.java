@@ -50,9 +50,9 @@ public class AliPayTask {
         }
     }
 
-/*    *//**
+    /**
      * 从第0秒开始每隔30秒执行1次，查询创建超过5分钟，并且未成功的退款单
-     *//*
+     */
     @Scheduled(cron = "0/30 * * * * ?")
     public void refundConfirm() throws Exception {
         log.info("refundConfirm 被执行......");
@@ -64,7 +64,7 @@ public class AliPayTask {
             log.warn("超时未退款的退款单号:{}", refundNo);
             aliPayService.checkRefundStatus(refundNo);
         }
-    }*/
+    }
 
 
 }

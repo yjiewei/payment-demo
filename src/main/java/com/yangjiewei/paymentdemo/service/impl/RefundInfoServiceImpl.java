@@ -32,7 +32,7 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
      * @return
      */
     @Override
-    public RefundInfo createRefundByOrderNo(String orderNo, String reason) {
+    public RefundInfo createRefundByOrderNo(String orderNo, String reason, String paymentType) {
         // 获取订单信息
         OrderInfo orderInfo = orderInfoService.getOrderByOrderNo(orderNo);
 
@@ -43,6 +43,7 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
         refundInfo.setTotalFee(orderInfo.getTotalFee());//原订单金额(分)
         refundInfo.setRefund(orderInfo.getTotalFee());//退款金额(分)
         refundInfo.setReason(reason);//退款原因
+        refundInfo.setPaymentType(paymentType);
 
         //保存退款订单
         baseMapper.insert(refundInfo);

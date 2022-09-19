@@ -7,20 +7,16 @@ package com.yangjiewei.paymentdemo.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
-import com.alipay.api.request.AlipayTradeCloseRequest;
-import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.request.AlipayTradeRefundRequest;
-import com.alipay.api.response.AlipayTradeCloseResponse;
-import com.alipay.api.response.AlipayTradePagePayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.alipay.api.response.AlipayTradeRefundResponse;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.yangjiewei.paymentdemo.entity.OrderInfo;
 import com.yangjiewei.paymentdemo.entity.RefundInfo;
 import com.yangjiewei.paymentdemo.enums.OrderStatus;
 import com.yangjiewei.paymentdemo.enums.PayType;
 import com.yangjiewei.paymentdemo.enums.alipay.AliTradeState;
+import com.yangjiewei.paymentdemo.enums.wxpay.WxRefundStatus;
 import com.yangjiewei.paymentdemo.enums.wxpay.WxTradeState;
 import com.yangjiewei.paymentdemo.service.AliPayService;
 import com.yangjiewei.paymentdemo.service.OrderInfoService;
@@ -222,7 +218,7 @@ public class AliPayServiceImpl implements AliPayService {
         try {
             log.info("调用退款api");
             // 1.创建退款订单
-            RefundInfo refundInfo = refundInfoService.createRefundByOrderNo(orderNo, reason);
+            RefundInfo refundInfo = refundInfoService.createRefundByOrderNo(orderNo, reason, PayType.ALIPAY.getType());
 
             // 2.封装参数 调用退款接口
             AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
@@ -253,6 +249,101 @@ public class AliPayServiceImpl implements AliPayService {
     }
 
     /**
+     * 根据订单号查退款单信息
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public String queryRefund(String orderNo) {
+
+        try {
+            log.info("查询退款接口调用：{}", orderNo);
+            AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("out_trade_no", orderNo);
+            bizContent.put("out_request_no", orderNo);
+            request.setBizContent(bizContent.toString());
+
+            AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                log.info("调用成功，返回结果:" + response.getBody());
+                return response.getBody();
+            } else {
+                log.info("调用失败，返回码:" + response.getCode() + ", 返回描述:" + response.getMsg());
+                // 订单不存在
+                return null;
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            throw new RuntimeException("查单接口的调用失败");
+        }
+    }
+
+    @Override
+    public void checkRefundStatus(String refundNo) {
+        // 1.查询退款订单
+        String refund = this.queryRefund(refundNo);
+
+        // 2.解析响应信息
+        Gson gson = new Gson();
+        Map<String, Object> refundMap = gson.fromJson(refund, HashMap.class);
+        // 获取支付宝支付端退款状态
+        String refundStatus = (String) refundMap.get("refund_status");
+        String orderNo = (String) refundMap.get("out_trade_no");
+        if (AliTradeState.REFUND_SUCCESS.getStatus().equals(refundStatus)) {
+            // 已经成功退款
+            log.info("核实订单已经成功退款，orderNo:{}, refundNo:{}", orderNo, refundNo);
+            // 3.更新订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_SUCCESS);
+            // 4.更新退款单
+            refundInfoService.updateRefund(refund);
+        }
+        if (AliTradeState.REFUND_ERROR.getStatus().equals(refundStatus)) {
+            // 退款异常
+            log.warn("退款异常，orderNo:{}, refundNo:{}", orderNo, refundNo);
+            // 3.更新订单状态
+            orderInfoService.updateStatusByOrderNo(orderNo, OrderStatus.REFUND_ABNORMAL);
+            // 4.更新退款单
+            refundInfoService.updateRefund(refund);
+        }
+    }
+
+    /**
+     * 查询账单
+     * @param billDate
+     * @param type
+     * @return
+     */
+    @Override
+    public String queryBill(String billDate, String type) {
+
+        try {
+            AlipayDataDataserviceBillDownloadurlQueryRequest request = new
+                    AlipayDataDataserviceBillDownloadurlQueryRequest();
+            JSONObject bizContent = new JSONObject();
+            bizContent.put("bill_type", type);
+            bizContent.put("bill_date", billDate);
+            request.setBizContent(bizContent.toString());
+            AlipayDataDataserviceBillDownloadurlQueryResponse response = alipayClient.execute(request);
+            if(response.isSuccess()) {
+                log.info("调用成功，返回结果:" + response.getBody());
+                // 获取账单下载地址
+                Gson gson = new Gson();
+                // fixme 为什么是这个类型 linkedtreemap，换成map是否可行
+                HashMap<String, LinkedTreeMap> resultMap = gson.fromJson(response.getBody(), HashMap.class);
+                LinkedTreeMap billDownloadurlResponse = resultMap.get("alipay_data_dataservice_bill_downloadurl_query_response");
+                return (String)billDownloadurlResponse.get("bill_download_url");
+            }else {
+                log.info("调用失败，返回码:" + response.getCode() + ", 返回描述: " + response.getMsg() + response.getSubMsg());
+                throw new RuntimeException("申请账单失败");
+            }
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+            throw new RuntimeException("申请账单失败");
+        }
+    }
+
+    /**
      * 支付宝关单接口
      * @param orderNo
      */
@@ -261,7 +352,7 @@ public class AliPayServiceImpl implements AliPayService {
             log.info("关单接口的调用，订单号:{}", orderNo);
             AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
             JSONObject bizContent = new JSONObject();
-            bizContent.put("trade_no", "2013112611001004680073956707");
+            bizContent.put("out_trade_no", orderNo);
             request.setBizContent(bizContent.toString());
             AlipayTradeCloseResponse response = alipayClient.execute(request);
             if(response.isSuccess()){
